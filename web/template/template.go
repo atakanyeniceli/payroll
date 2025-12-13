@@ -2,24 +2,24 @@ package template
 
 import (
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 )
 
-var Tmpl *template.Template
-
-func Init() error {
+func Init() *template.Template {
 
 	wdPath, err := os.Getwd()
 	if err != nil {
-		return nil
+		log.Fatal("Web Template init error=", err)
 	}
 
 	htmlFilePath := filepath.Join(wdPath, "web", "html", "*.html")
 
-	Tmpl, err = template.ParseGlob(htmlFilePath)
+	Tmpl, err := template.ParseGlob(htmlFilePath)
 	if err != nil {
-		return err
+		log.Fatal("Web template init error=", err)
 	}
-	return nil
+
+	return Tmpl
 }

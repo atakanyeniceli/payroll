@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/output.css">
+    <script src="/static/js/htmx.js"></script>
+    <script src="/static/js/htmxError.js"></script>
+    <title>Maaşım</title>
+</head>
+
+<body id="content" hx-ext="response-targets" class="w-full h-screen">
+    {{ if eq . "login" }}
+    {{ template "login.html" .}}
+
+    {{ else if eq . "dashboard" }}
+    {{ template "dashboard.html" .}}
+
+    {{ else }}
+    <p>Sayfa bulunamadı.</p>
+    {{ end }}
+</body>
+
+</html>
