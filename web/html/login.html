@@ -1,49 +1,78 @@
-<section class="bg-gray-50 dark:bg-gray-900 h-screen">
-    <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
-        <div
-            class="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
-            <div class="space-y-4 p-6 sm:p-8 md:space-y-6">
-                <h1 class="text-xl leading-tight font-bold tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                    Giriş Yap</h1>
-                <div id="login-error" class="text-red-500 text-sm font-medium"></div>
-                <form class="space-y-4 md:space-y-6" action="#">
-                    <div>
-                        <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Email
-                            adresiniz</label>
-                        <input type="email" name="email" id="email"
-                            class="focus:ring-primary-600 focus:border-primary-600 rouded-lg block w-full border border-gray-300 bg-gray-50 p-2.5 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                            placeholder="aaa@aaa.com" required="" />
-                    </div>
-                    <div>
+<section class="min-h-screen flex items-stretch font-sans text-slate-600 dark:text-slate-300">
+
+    <div class="lg:flex w-1/2 hidden bg-slate-900 relative items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0 bg-cover bg-center opacity-40 mix-blend-overlay"
+            style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
+        </div>
+
+        <div class="w-full px-24 z-10 text-center relative">
+            <h1 class="text-4xl font-bold tracking-tight text-white mb-4">Maaş Yönetimi</h1>
+            <p class="text-lg text-slate-300 font-light leading-relaxed">
+                Finansal özgürlüğünüzü yönetmenin en sade ve profesyonel yolu.
+            </p>
+        </div>
+    </div>
+
+    <div
+        class="lg:w-1/2 w-full flex items-center justify-center text-center md:px-16 px-0 z-0 bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
+
+        <div class="w-full py-6 z-20 max-w-md mx-auto px-6">
+
+            <div class="text-left mb-10">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+                    Giriş Yap
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Devam etmek için hesabınıza erişin.
+                </p>
+            </div>
+
+            <div id="login-error"
+                class="text-left mb-6 text-rose-600 text-sm font-medium bg-rose-50 dark:bg-rose-900/10 p-3 rounded-lg border border-rose-200 dark:border-rose-900/20 empty:hidden">
+            </div>
+
+            <form action="#" class="space-y-6 text-left">
+
+                <div>
+                    <label for="email"
+                        class="text-sm font-semibold text-gray-700 dark:text-slate-200 block mb-2">Email</label>
+                    <input type="email" name="email" id="email" placeholder="ornek@mail.com" required
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200 shadow-sm" />
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
                         <label for="password"
-                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Şifreniz</label>
-                        <input type="password" name="password" id="password" placeholder="••••••••"
-                            class="focus:ring-primary-600 focus:border-primary-600 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                            required="" />
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-start">
-                            <div class="flex h-5 items-center">
-                                <input id="remember" aria-describedby="remember" type="checkbox"
-                                    class="focus:ring-primary-300 dark:focus:ring-primary-600 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-3 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800"
-                                    required="" />
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="remember" class="text-gray-500 dark:text-gray-300">Beni hatırla</label>
-                            </div>
-                        </div>
+                            class="text-sm font-semibold text-gray-700 dark:text-slate-200">Şifre</label>
                         <a href="#"
-                            class="text-primary-600 dark:text-primary-500 text-sm font-medium hover:underline">Şifremi
+                            class="text-xs font-medium text-sky-600 hover:text-sky-700 dark:text-sky-500 dark:hover:text-sky-400 transition-colors">Şifremi
                             unuttum?</a>
                     </div>
-                    <button hx-post="/login" hx-target="#content" hx-target-4xx="#login-error"
-                        class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 w-full rounded-lg px-5 py-2.5 text-center text-sm font-medium text-white focus:ring-4 focus:outline-none">Giriş
-                        yap</button>
-                    <p class="text-sm font-light text-gray-500 dark:text-gray-400">Hesabım yok <a hx-get="/register"
-                            hx-target="#content" hx-push-url="true"
-                            class="text-primary-600 dark:text-primary-500 font-medium hover:underline">Kayıt ol</a></p>
-                </form>
-            </div>
+                    <input type="password" name="password" id="password" placeholder="••••••••" required
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200 shadow-sm" />
+                </div>
+
+                <div class="flex items-center">
+                    <input id="remember" type="checkbox"
+                        class="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded cursor-pointer bg-gray-50 dark:bg-slate-800 dark:border-slate-600">
+                    <label for="remember" class="ml-2 block text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                        Beni hatırla
+                    </label>
+                </div>
+
+                <button hx-post="/login" hx-target="#content" hx-target-4xx="#login-error"
+                    class="w-full py-3 px-4 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg shadow-sm hover:shadow transition-all duration-200 text-sm">
+                    Giriş Yap
+                </button>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-8">
+                    Hesabınız yok mu?
+                    <a hx-get="/register" hx-target="#content" hx-push-url="true"
+                        class="font-semibold text-sky-600 hover:text-sky-800 dark:text-sky-500 dark:hover:text-sky-400 transition-colors cursor-pointer">
+                        Kayıt Olun
+                    </a>
+                </p>
+            </form>
         </div>
     </div>
 </section>

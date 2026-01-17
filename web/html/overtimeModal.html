@@ -1,0 +1,129 @@
+<div id="modal-backdrop"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+
+    <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transform transition-all animate-in zoom-in-95 duration-200"
+        onclick="event.stopPropagation()">
+
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800">
+            <div class="flex items-center gap-4">
+                <div
+                    class="p-3 bg-gray-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl border border-gray-100 dark:border-slate-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">Fazla Mesai</h3>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-500">Çalışma saatlerini sisteme işleyin
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('modal-container').innerHTML = ''"
+                class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <form hx-post="/dashboard/overtime" hx-target="#modal-container" hx-swap="innerHTML">
+            <div class="p-6 space-y-6">
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai
+                        Tarihi</label>
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <input type="date" name="workDate" required onclick="this.showPicker()"
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-shadow shadow-sm font-medium cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-5 relative">
+                    <div
+                        class="absolute inset-0 flex items-center justify-center pointer-events-none mt-6 text-slate-300 dark:text-slate-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Başlangıç</label>
+                        <input type="time" name="startTime" required onclick="this.showPicker()"
+                            class="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-center font-semibold shadow-sm cursor-pointer">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Bitiş</label>
+                        <input type="time" name="endTime" required onclick="this.showPicker()"
+                            class="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-center font-semibold shadow-sm cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai Türü /
+                        Oranı</label>
+                    <div class="relative">
+                        <select name="multiplier"
+                            class="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent appearance-none shadow-sm font-medium cursor-pointer">
+                            <option value="1.50">%50 Zamlı</option>
+                            <option value="1.75">%75 Zamlı</option>
+                            <option value="2.00">%100 Zamlı</option>
+                            <option value="2.50">%150 Zamlı</option>
+                            <option value="3.00">%200 Zamlı</option>
+                            <option value="4.00">%300 Zamlı</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Not /
+                        Açıklama</label>
+                    <textarea name="description" rows="2" placeholder="Örn: Yıl sonu envanter sayımı..."
+                        class="w-full py-3 px-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm resize-none"></textarea>
+                </div>
+            </div>
+
+            <div
+                class="px-6 py-5 bg-gray-50 dark:bg-slate-900/50 border-t border-gray-100 dark:border-slate-800 rounded-b-2xl flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('modal-container').innerHTML = ''"
+                    class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-white transition shadow-sm">
+                    Vazgeç
+                </button>
+                <button type="submit"
+                    class="px-5 py-2.5 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-800 rounded-xl shadow-md shadow-sky-200 dark:shadow-none transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('modal-backdrop').addEventListener('click', function (e) {
+        if (e.target === this) document.getElementById('modal-container').innerHTML = '';
+    });
+</script>

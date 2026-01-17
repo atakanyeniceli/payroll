@@ -3,11 +3,10 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
 
+	apperror "github.com/atakanyeniceli/payroll/models/appError"
 	"github.com/atakanyeniceli/payroll/models/user"
-	customErrors "github.com/atakanyeniceli/payroll/tools/customerrors"
 	"github.com/atakanyeniceli/payroll/tools/emailcheck"
 	"github.com/atakanyeniceli/payroll/tools/hash"
 )
@@ -21,31 +20,31 @@ func (s *Service) Register(firstname, lastname, email, password, confirmPassword
 
 	// 2. Temel Doğrulama (Validation)
 	if firstname == "" || lastname == "" || email == "" {
-		return customErrors.ErrMissingFields
+		return user.ErrMissingFields
 	}
 
 	if !emailcheck.EmailCheck(email) {
-		return customErrors.ErrInvalidEmail
+		return user.ErrInvalidEmail
 	}
 
 	if password != confirmPassword {
-		return customErrors.ErrInvalidPassword
+		return user.ErrPasswordsNotMatch
 	}
 
 	// 3. Kullanıcının Mevcut Olup Olmadığını Kontrol Et
 	existingUser, err := s.Repo.GetUserByEmail(email)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return fmt.Errorf("kullanıcı kontrol edilirken bir veritabanı hatası oluştu: %w", err)
+		return apperror.NewServerError(err)
 	}
 	if existingUser != nil { // err == nil ise, kullanıcı bulunmuştur.
-		return fmt.Errorf("Bu email adresi zaten kayıtlı")
+		return user.ErrEmailTaken
 	}
 
 	// Şifreyi Hash'le
 	hashedPass, err := hash.Hash(password)
 	if err != nil {
-		return fmt.Errorf("şifre hashlenirken bir hata oluştu: %w", err)
+		return apperror.NewServerError(err)
 	}
 
 	// Repository'ye yazma emrini ver
@@ -59,7 +58,7 @@ func (s *Service) Register(firstname, lastname, email, password, confirmPassword
 
 	err = s.Repo.CreateUser(newUser)
 	if err != nil {
-		return fmt.Errorf("yeni kullanıcı oluşturulurken bir hata oluştu: %w", err)
+		return apperror.NewServerError(err)
 	}
 
 	return nil
