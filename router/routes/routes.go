@@ -3,66 +3,66 @@ package routes
 import (
 	"net/http"
 
-	hourlyrate "github.com/atakanyeniceli/payroll/models/hourlyrate/handler"
+	hourlyrateHandler "github.com/atakanyeniceli/payroll/models/hourlyrate/handler"
 	overtimeHandler "github.com/atakanyeniceli/payroll/models/overtime/handler"
+	summaryHandler "github.com/atakanyeniceli/payroll/models/summary/handler"
 	userHandler "github.com/atakanyeniceli/payroll/models/user/handler"
 	webHandler "github.com/atakanyeniceli/payroll/web/handler"
 )
 
-// ----------------------------------------------------------------------
-// 1. PUBLIC ROTALAR (Herkes Erişebilir)
-// ----------------------------------------------------------------------
+// ==============================================================================
+// 1. PUBLIC ROUTES (Giriş Yapılmadan Erişilenler)
+// ==============================================================================
+// URL Prefix: / (Root)
 
-func PublicWebRoutes(mux *http.ServeMux, h *webHandler.Handler, fs http.Handler) {
-	// Statik Dosyalar
+func PublicRoutes(mux *http.ServeMux, wh *webHandler.Handler, uh *userHandler.Handler, fs http.Handler) {
+	// Statik Dosyalar (CSS, JS, Images)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", fs))
 
-	// Sayfalar
-	mux.HandleFunc("GET /login", h.Login)
-	mux.HandleFunc("GET /register", h.Register)
-	mux.HandleFunc("GET /{$}", h.Index)
+	// Sayfalar (HTML Render)
+	mux.HandleFunc("GET /login", wh.Login)
+	mux.HandleFunc("GET /register", wh.Register)
+	mux.HandleFunc("GET /{$}", wh.Index) // Landing Page
+
+	// Auth İşlemleri (Form Post)
+	mux.HandleFunc("POST /login", uh.WebLogin)
+	mux.HandleFunc("POST /register", uh.WebRegister)
+	mux.HandleFunc("GET /logout", uh.WebLogout)
 }
 
-func PublicAuthRoutes(mux *http.ServeMux, h *userHandler.Handler) {
-	mux.HandleFunc("POST /login", h.WebLogin)
-	mux.HandleFunc("POST /register", h.WebRegister)
-	mux.HandleFunc("GET /logout", h.WebLogout)
-}
+// ==============================================================================
+// 2. PRIVATE WEB ROUTES (Giriş Yapmış Kullanıcılar)
+// ==============================================================================
+// URL Prefix: /dashboard/ (Main.go'da strip edilir)
+// Not: Buradaki yolların başına "/dashboard" yazmanıza gerek yoktur.
 
-// ----------------------------------------------------------------------
-// 2. DASHBOARD ROTALARI (Korumalı Web Alanı - HTML/HTMX)
-// ----------------------------------------------------------------------
-// Not: Bu rotalar main.go'da "/dashboard" altına mount edilir.
-// Buradaki "/" aslında "/dashboard/" demektir.
+func PrivateWebRoutes(
+	mux *http.ServeMux,
+	uh *userHandler.Handler,
+	oh *overtimeHandler.Handler,
+	hh *hourlyrateHandler.Handler,
+	sh *summaryHandler.Handler,
+) {
+	// --- ANA SAYFA ---
+	mux.HandleFunc("GET /{$}", uh.WebDashboard) // /dashboard
 
-func DashboardUserRoutes(mux *http.ServeMux, h *userHandler.Handler) {
-	mux.HandleFunc("GET /{$}", h.WebDashboard) // Dashboard Ana Sayfa
-}
+	// --- OVERTIME (Fazla Mesai) ---
+	// Sayfa Parçaları (HTMX Partial)
+	mux.HandleFunc("GET /overtime", oh.GetDashboard)    // Tabloyu getirir
+	mux.HandleFunc("GET /modals/overtime", oh.GetModal) // Modalı getirir
 
-func DashboardOvertimeRoutes(mux *http.ServeMux, h *overtimeHandler.Handler) {
-	// Modallar
-	mux.HandleFunc("GET /modals/overtime", h.GetModal) // /dashboard/modals/overtime
+	// İşlemler (Actions)
+	mux.HandleFunc("POST /overtime", oh.Create)
 
-	mux.HandleFunc("GET /overtime", h.GetDashboard)
-	mux.HandleFunc("POST /overtime", h.Create) // /dashboard/overtime
+	// --- HOURLY RATE (Saatlik Ücret) ---
+	// Sayfa Parçaları
+	mux.HandleFunc("GET /modals/hourlyrate", hh.GetModal)
 
-	// İşlemler (HTMX Post)
-	mux.HandleFunc("POST /save/overtime", h.Create) // /dashboard/save/overtime
-}
-func DashboardHourlyRateRoutes(mux *http.ServeMux, h *hourlyrate.Handler) {
-	mux.HandleFunc("POST /hourlyrate", h.Create) // /dashboard/hourlyrate
+	// İşlemler
+	mux.HandleFunc("POST /hourlyrate", hh.Create)
+	mux.HandleFunc("GET /hourlyrate", hh.GetCurrent)
 
-}
+	//----SUMMARY-----
+	mux.HandleFunc("GET /summary", sh.GetCurrent)
 
-// ----------------------------------------------------------------------
-// 3. API ROTALARI (Mobil Uygulama - JSON)
-// ----------------------------------------------------------------------
-// Not: Bu rotalar main.go'da "/api" altına mount edilir.
-
-func ApiUserRoutes(mux *http.ServeMux, h *userHandler.Handler) {
-	// mux.HandleFunc("POST /login", h.ApiLogin) // Örnek: Mobil Login
-}
-
-func ApiOvertimeRoutes(mux *http.ServeMux, h *overtimeHandler.Handler) {
-	// mux.HandleFunc("POST /overtime", h.CreateApi) // Örnek: Mobil Mesai Kayıt
 }

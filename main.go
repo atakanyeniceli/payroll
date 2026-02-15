@@ -10,20 +10,22 @@ import (
 
 	"github.com/atakanyeniceli/payroll/database"
 
-	// User Modülü
-	userHandler "github.com/atakanyeniceli/payroll/models/user/handler"
-	userRepository "github.com/atakanyeniceli/payroll/models/user/repository"
-	userService "github.com/atakanyeniceli/payroll/models/user/service"
+	// Modüller
 
-	// Overtime Modülü
+	summaryHandler "github.com/atakanyeniceli/payroll/models/summary/handler"
+	summaryService "github.com/atakanyeniceli/payroll/models/summary/service"
+
+	hourlyRateHandler "github.com/atakanyeniceli/payroll/models/hourlyrate/handler"
+	hourlyRateRepository "github.com/atakanyeniceli/payroll/models/hourlyrate/repository"
+	hourlyRateService "github.com/atakanyeniceli/payroll/models/hourlyrate/service"
+
 	overtimeHandler "github.com/atakanyeniceli/payroll/models/overtime/handler"
 	overtimeRepository "github.com/atakanyeniceli/payroll/models/overtime/repository"
 	overtimeService "github.com/atakanyeniceli/payroll/models/overtime/service"
 
-	//Hourlyrate Modülü
-	hourlyRateHandler "github.com/atakanyeniceli/payroll/models/hourlyrate/handler"
-	hourlyRateRepository "github.com/atakanyeniceli/payroll/models/hourlyrate/repository"
-	hourlyRateService "github.com/atakanyeniceli/payroll/models/hourlyrate/service"
+	userHandler "github.com/atakanyeniceli/payroll/models/user/handler"
+	userRepository "github.com/atakanyeniceli/payroll/models/user/repository"
+	userService "github.com/atakanyeniceli/payroll/models/user/service"
 
 	"github.com/atakanyeniceli/payroll/router"
 	"github.com/atakanyeniceli/payroll/router/routes"
@@ -33,100 +35,94 @@ import (
 	webTmpl "github.com/atakanyeniceli/payroll/web/template"
 )
 
-// Handlers struct'ını genişlettik
+// Handlers struct'ı, init fonksiyonundan main'e temiz veri taşımak için kullanılır
 type Handlers struct {
 	User       *userHandler.Handler
 	Overtime   *overtimeHandler.Handler
 	HourlyRate *hourlyRateHandler.Handler
+	Summary    *summaryHandler.Handler
 	Web        *webHandler.Handler
 }
 
 func main() {
-	// 1. Temel Başlatmalar
+	// --- BAŞLATMA ---
 	tmpl := webTmpl.Init()
 	db := database.Init()
 	logger.InitLogger()
-
 	defer logger.LogFile.Close()
 	defer db.Close()
 
-	osWd := getWD()
 	tokenManager := token.NewManager()
 
-	// 2. Handler ve Servislerin Kurulumu
+	// Handler'ları Hazırla
 	h := handlerInit(db, tmpl, tokenManager)
-	webFS := http.FileServer(http.Dir(filepath.Join(osWd, "web")))
+	webFS := http.FileServer(http.Dir(filepath.Join(getWD(), "web")))
 
-	// 3. Router Kurulumu
-	r := router.NewRouter() // Root Router
+	// --- ROUTER KURULUMU ---
+	r := router.NewRouter() // Ana Router
 
-	// A) PUBLIC ROTALAR (Middleware Yok)
-	// ------------------------------------------------------------
-	// Login, Register, Static Files
-	routes.PublicWebRoutes(r.Mux, h.Web, webFS)
-	routes.PublicAuthRoutes(r.Mux, h.User)
+	// 1. PUBLIC ALAN
+	// Login, Register ve Statik dosyalar
+	routes.PublicRoutes(r.Mux, h.Web, h.User, webFS)
 
-	// B) DASHBOARD ROTALARI (Web Auth Middleware Var)
-	// ------------------------------------------------------------
-	// "/dashboard" ön eki ile gelen istekler buraya
+	// 2. PRIVATE WEB ALANI (Sub-Router)
+	// Sadece yetkili kullanıcıların erişebileceği alan
+	privateWebMux := http.NewServeMux()
 
-	dashboardMux := http.NewServeMux()
+	// Tüm özel web rotalarını tek seferde kaydet
+	routes.PrivateWebRoutes(
+		privateWebMux,
+		h.User,
+		h.Overtime,
+		h.HourlyRate,
+		h.Summary,
+	)
 
-	// Rotaları ekle
-	routes.DashboardUserRoutes(dashboardMux, h.User)
-	routes.DashboardOvertimeRoutes(dashboardMux, h.Overtime)
-	routes.DashboardHourlyRateRoutes(dashboardMux, h.HourlyRate)
-
-	// Middleware'i uygula ve Root Router'a bağla
-	// StripPrefix: "/dashboard" kısmını url'den siler, iç router sadece "/modals/overtime" görür.
+	// Dashboard Middleware Bağlantısı
 	webAuth := router.WebAuthMiddleware(tokenManager)
-	r.Handle("/dashboard/", http.StripPrefix("/dashboard", webAuth(dashboardMux)))
+	r.Handle("/dashboard/", http.StripPrefix("/dashboard", webAuth(privateWebMux)))
 
-	// C) API ROTALARI (Mobil - Token Auth Middleware Var)
-	// ------------------------------------------------------------
-	// Gelecekte burayı aktif edebilirsin
-	/*
-		apiMux := http.NewServeMux()
-		routes.ApiOvertimeRoutes(apiMux, h.Overtime)
-		apiAuth := router.ApiAuthMiddleware(tokenManager) // Farklı bir middleware olabilir
-		r.Handle("/api/", http.StripPrefix("/api", apiAuth(apiMux)))
-	*/
-
-	// 4. Sunucuyu Başlat
+	// --- SUNUCUYU BAŞLAT ---
 	r.Run()
 }
 
 func handlerInit(db *sql.DB, tmpl *template.Template, tm *token.Manager) *Handlers {
-	// User Modülü
+	// 1. User
 	userRepo := userRepository.NewRepository(db)
-	userService := userService.NewService(userRepo)
-	userHandler := userHandler.NewHandler(userService, tmpl, tm)
+	userSrv := userService.NewService(userRepo)
+	userH := userHandler.NewHandler(userSrv, tmpl, tm)
 
-	// Overtime Modülü (Eklendi)
+	// 2. Hourly Rate (Overtime buna bağımlı olduğu için önce başlattık)
+	rateRepo := hourlyRateRepository.NewRepository(db)
+	rateSrv := hourlyRateService.NewService(rateRepo)
+	rateH := hourlyRateHandler.NewHandler(rateSrv, tmpl, tm)
+
+	// 3. Overtime
 	overtimeRepo := overtimeRepository.NewRepository(db)
-	overtimeService := overtimeService.NewService(overtimeRepo)
-	overtimeHandler := overtimeHandler.NewHandler(overtimeService, tmpl, tm) // Handler yapına göre parametreleri düzenle
+	// Overtime servisi, maaş hesaplaması için Rate servisine ihtiyaç duyar
+	overtimeSrv := overtimeService.NewService(overtimeRepo, rateSrv)
+	overtimeH := overtimeHandler.NewHandler(overtimeSrv, tmpl, tm)
 
-	// HourlyRate Modülü
-	hourlyRateRepo := hourlyRateRepository.NewRepository(db)
-	hourlyRateService := hourlyRateService.NewService(hourlyRateRepo)
-	hourlyRateHandler := hourlyRateHandler.NewHandler(hourlyRateService, tmpl, tm)
+	//Summary
+	summarySrv := summaryService.NewService(overtimeSrv, rateSrv)
+	summaryH := summaryHandler.NewHandler(summarySrv, tmpl, tm)
 
-	// Web (Sayfa) Modülü
-	webHandler := webHandler.NewHandler(tmpl)
+	// 4. Web Pages
+	webH := webHandler.NewHandler(tmpl)
 
 	return &Handlers{
-		User:       userHandler,
-		Overtime:   overtimeHandler,
-		HourlyRate: hourlyRateHandler,
-		Web:        webHandler,
+		User:       userH,
+		Overtime:   overtimeH,
+		HourlyRate: rateH,
+		Summary:    summaryH,
+		Web:        webH,
 	}
 }
 
 func getWD() string {
-	osWd, err := os.Getwd()
+	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatal("GETWD error=", err)
+		log.Fatal(err)
 	}
-	return osWd
+	return wd
 }

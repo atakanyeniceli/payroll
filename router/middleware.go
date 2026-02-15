@@ -21,6 +21,12 @@ func WebAuthMiddleware(tokenManager *token.Manager) func(http.Handler) http.Hand
 			cookie, err := r.Cookie("session_token")
 			if err != nil {
 				// Cookie yoksa, kullanıcı giriş yapmamıştır. Login sayfasına yönlendir.
+				// Eğer istek HTMX ile yapılmışsa, istemci tarafında tam sayfa yönlendirmesi yap.
+				if r.Header.Get("HX-Request") == "true" {
+					w.Header().Set("HX-Redirect", "/")
+					w.WriteHeader(http.StatusOK)
+					return
+				}
 				http.Redirect(w, r, "/", http.StatusFound)
 				return
 			}
@@ -34,6 +40,12 @@ func WebAuthMiddleware(tokenManager *token.Manager) func(http.Handler) http.Hand
 				// Token geçerli değilse (süresi dolmuş veya sahte), login sayfasına yönlendir.
 				// Güvenlik için geçersiz cookie'yi de silebiliriz.
 				http.SetCookie(w, &http.Cookie{Name: "session_token", MaxAge: -1})
+
+				if r.Header.Get("HX-Request") == "true" {
+					w.Header().Set("HX-Redirect", "/")
+					w.WriteHeader(http.StatusOK)
+					return
+				}
 				http.Redirect(w, r, "/", http.StatusFound)
 				return
 			}

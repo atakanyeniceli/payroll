@@ -20,6 +20,9 @@ type CreateOvertimeDTO struct {
 }
 
 func (s *Service) CreateOvertime(ctx context.Context, dto CreateOvertimeDTO) (*overtime.Overtime, error) {
+	// 0. Timeout Tanımla
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
 	// 1. Validasyonlar
 	if dto.DateStr == "" || dto.StartTime == "" || dto.EndTime == "" {

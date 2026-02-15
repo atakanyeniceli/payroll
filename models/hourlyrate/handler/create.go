@@ -9,8 +9,10 @@ import (
 )
 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	// 1. Context'ten UserID al
-	userID, ok := r.Context().Value(router.UserIDKey).(int)
+	userID, ok := ctx.Value(router.UserIDKey).(int)
 	if !ok {
 		http.Error(w, "Oturum hatası: Kullanıcı ID bulunamadı.", http.StatusUnauthorized)
 		return
@@ -19,12 +21,12 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// 2. DTO Hazırla (Form verileriyle)
 	dto := service.CreateHourlyRateDTO{
 		UserID:           userID,
-		AmountStr:        r.FormValue("amount"),
+		AmountStr:        r.FormValue("rate"),
 		EffectiveDateStr: r.FormValue("effectiveDate"),
 	}
 
 	// 3. Servisi Çağır
-	_, err := h.Service.Create(r.Context(), dto)
+	_, err := h.Service.Create(ctx, dto)
 	if err != nil {
 		code, msg := apperror.Resolve(err)
 		w.WriteHeader(code)

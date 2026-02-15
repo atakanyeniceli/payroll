@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"strconv"
+	"strings"
 	"time"
 
 	apperror "github.com/atakanyeniceli/payroll/models/appError"
@@ -16,6 +17,13 @@ type CreateHourlyRateDTO struct {
 }
 
 func (s *Service) Create(ctx context.Context, dto CreateHourlyRateDTO) (*hourlyrate.HourlyRate, error) {
+	// 0. Timeout ve Temizlik
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	dto.AmountStr = strings.TrimSpace(dto.AmountStr)
+	dto.EffectiveDateStr = strings.TrimSpace(dto.EffectiveDateStr)
+
 	// 1. Validasyon
 	if dto.AmountStr == "" || dto.EffectiveDateStr == "" {
 		return nil, apperror.NewClientError("Lütfen tüm alanları doldurunuz.", 400)

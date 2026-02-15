@@ -1,0 +1,89 @@
+<div id="modal-backdrop"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+
+    <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl ring-1 ring-slate-900/5 dark:ring-white/10 transform transition-all animate-in zoom-in-95 duration-200"
+        onclick="event.stopPropagation()">
+
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Saatlik Ücret</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Maaş tarifenizi güncelleyin</p>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('modal-container').innerHTML = ''"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <form hx-post="/dashboard/hourlyrate" hx-target="#modal-container" hx-swap="innerHTML">
+            <div class="p-6 space-y-5">
+
+                <div
+                    class="p-3 bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800 rounded-xl flex gap-3">
+                    <svg class="w-5 h-5 text-sky-600 dark:text-sky-400 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-xs text-sky-800 dark:text-sky-300">
+                        Gireceğiniz ücret, <strong>seçilen tarihten itibaren</strong> yapılacak hesaplamalarda
+                        kullanılacaktır.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Saatlik
+                        Ücret</label>
+                    <div class="relative">
+                        <input type="number" name="rate" step="0.01" required placeholder="0.00"
+                            class="w-full rounded-xl border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white focus:ring-sky-500 focus:border-sky-500 py-3 pl-4 pr-10 font-bold text-lg">
+                        <span class="absolute right-4 top-3.5 text-slate-400 font-bold">₺</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Geçerlilik
+                        Tarihi</label>
+                    <div class="relative">
+                        <input type="date" name="effectiveDate" required onclick="this.showPicker()"
+                            class="w-full rounded-xl border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white focus:ring-sky-500 focus:border-sky-500 py-2.5 cursor-pointer">
+                    </div>
+                </div>
+
+            </div>
+
+            <div
+                class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 rounded-b-2xl flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('modal-container').innerHTML = ''"
+                    class="px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    Vazgeç
+                </button>
+                <button type="submit"
+                    class="px-5 py-2.5 text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-lg shadow-sky-200 dark:shadow-none transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById('modal-backdrop').addEventListener('click', function (e) {
+        if (e.target === this) document.getElementById('modal-container').innerHTML = '';
+    });
+</script>

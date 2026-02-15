@@ -9,8 +9,14 @@ import (
 
 type Handler struct {
 	Service *service.Service
+	Tmpl    *template.Template
+	Token   *token.Manager
 }
 
 func NewHandler(service *service.Service, t *template.Template, tm *token.Manager) *Handler {
-	return &Handler{Service: service}
+	return &Handler{
+		Service: service,
+		Tmpl:    t,
+		Token:   tm,
+	}
 }
