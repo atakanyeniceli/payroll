@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	extraHandler "github.com/atakanyeniceli/payroll/models/extra/handler"
 	hourlyrateHandler "github.com/atakanyeniceli/payroll/models/hourlyrate/handler"
 	overtimeHandler "github.com/atakanyeniceli/payroll/models/overtime/handler"
 	summaryHandler "github.com/atakanyeniceli/payroll/models/summary/handler"
@@ -42,6 +43,7 @@ func PrivateWebRoutes(
 	oh *overtimeHandler.Handler,
 	hh *hourlyrateHandler.Handler,
 	sh *summaryHandler.Handler,
+	eh *extraHandler.Handler,
 ) {
 	// --- ANA SAYFA ---
 	mux.HandleFunc("GET /{$}", uh.WebDashboard) // /dashboard
@@ -64,5 +66,10 @@ func PrivateWebRoutes(
 
 	//----SUMMARY-----
 	mux.HandleFunc("GET /summary", sh.GetCurrent)
+
+	//------EXTRA(İkramiye,prim vb)---------
+	mux.HandleFunc("GET /modals/extra", eh.GetModal)
+	mux.HandleFunc("GET /extra", eh.GetCurrent)
+	mux.HandleFunc("POST /extra", eh.Create)
 
 }

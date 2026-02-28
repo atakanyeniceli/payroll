@@ -1,0 +1,37 @@
+{
+  "project_evaluation": {
+    "summary": "Proje, Domain-Driven Design (DDD) prensiplerine yakın, temiz ve anlaşılır bir yapıya sahip. Standart kütüphaneler etkin kullanılmış. Ancak production ortamı için konfigürasyon yönetimi ve loglama stratejisi geliştirilmeli.",
+    "critical_issues": [
+      {
+        "file": "tools/token/token.go",
+        "severity": "CRITICAL",
+        "description": "Race Condition / Panic Riski: 'GetSessionData' fonksiyonunda 'sync.RWMutex' ile 'RLock' (okuma kilidi) alınmışken map üzerinde 'delete' (yazma) işlemi yapılıyor. Bu durum yük altında uygulamanın panic vererek kapanmasına neden olur.",
+        "recommendation": "Okuma kilidi serbest bırakıldıktan sonra yazma kilidi (Lock) alınarak silme işlemi yapılmalı."
+      }
+    ],
+    "improvements": [
+      {
+        "file": "tools/logger/logger.go",
+        "severity": "MEDIUM",
+        "suggestion": "Global 'LogFile' değişkeni ve hardcoded 'error.log' ismi yerine, konfigürasyondan okunan ve dependency injection ile taşınan bir yapı kurulmalı. Ayrıca log rotasyonu eklenmeli."
+      },
+      {
+        "file": "web/template/template.go",
+        "severity": "LOW",
+        "suggestion": "'os.Getwd' kullanımı uygulamanın çalıştırıldığı dizine bağımlılık yaratır. Go 1.16+ ile gelen 'embed' paketi kullanılarak HTML dosyaları binary içine gömülebilir."
+      },
+      {
+        "file": "models/user/handler/webLogin.go",
+        "severity": "MEDIUM",
+        "suggestion": "Cookie ayarlarında 'Secure: false' olarak bırakılmış. Production ortamında bunun true olması ve config üzerinden yönetilmesi gerekir."
+      }
+    ],
+    "code_quality_score": "85/100",
+    "best_practices": {
+      "error_handling": "Başarılı (AppError yapısı tutarlı)",
+      "project_structure": "Başarılı (Modüler yapı)",
+      "security": "Geliştirilmeli (Hardcoded secret yok ancak konfigürasyon eksik)",
+      "concurrency": "Hatalı (Token manager düzeltilmeli)"
+    }
+  }
+}

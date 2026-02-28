@@ -49,14 +49,16 @@ func (m *Manager) CreateSession(userID int, duration time.Duration) (string, err
 // GetSessionData verilen token'a karşılık gelen oturum verisini döndürür.
 func (m *Manager) GetSessionData(token string) (SessionData, bool) {
 	m.mu.RLock()
-	defer m.mu.RUnlock()
-
 	data, exists := m.sessions[token]
+	m.mu.RUnlock() // Okuma kilidini hemen bırakıyoruz
+
 	// Oturum yoksa veya süresi dolmuşsa geçersiz kabul et.
 	if !exists || time.Now().After(data.ExpiresAt) {
 		if exists {
-			// Süresi dolmuş oturumu temizle.
+			// Süresi dolmuş oturumu temizlemek için YAZMA kilidi alıyoruz.
+			m.mu.Lock()
 			delete(m.sessions, token)
+			m.mu.Unlock()
 		}
 		return SessionData{}, false
 	}

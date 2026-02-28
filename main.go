@@ -11,6 +11,9 @@ import (
 	"github.com/atakanyeniceli/payroll/database"
 
 	// Modüller
+	extraHandler "github.com/atakanyeniceli/payroll/models/extra/handler"
+	extraRepository "github.com/atakanyeniceli/payroll/models/extra/repository"
+	extraService "github.com/atakanyeniceli/payroll/models/extra/service"
 
 	summaryHandler "github.com/atakanyeniceli/payroll/models/summary/handler"
 	summaryService "github.com/atakanyeniceli/payroll/models/summary/service"
@@ -41,6 +44,7 @@ type Handlers struct {
 	Overtime   *overtimeHandler.Handler
 	HourlyRate *hourlyRateHandler.Handler
 	Summary    *summaryHandler.Handler
+	Extra      *extraHandler.Handler
 	Web        *webHandler.Handler
 }
 
@@ -76,6 +80,7 @@ func main() {
 		h.Overtime,
 		h.HourlyRate,
 		h.Summary,
+		h.Extra,
 	)
 
 	// Dashboard Middleware Bağlantısı
@@ -107,6 +112,11 @@ func handlerInit(db *sql.DB, tmpl *template.Template, tm *token.Manager) *Handle
 	summarySrv := summaryService.NewService(overtimeSrv, rateSrv)
 	summaryH := summaryHandler.NewHandler(summarySrv, tmpl, tm)
 
+	// --- EXTRA MODULE ---
+	extraRepo := extraRepository.NewRepository(db)
+	extraSrv := extraService.NewService(extraRepo)
+	extraH := extraHandler.NewHandler(extraSrv, tmpl, tm)
+
 	// 4. Web Pages
 	webH := webHandler.NewHandler(tmpl)
 
@@ -115,6 +125,7 @@ func handlerInit(db *sql.DB, tmpl *template.Template, tm *token.Manager) *Handle
 		Overtime:   overtimeH,
 		HourlyRate: rateH,
 		Summary:    summaryH,
+		Extra:      extraH,
 		Web:        webH,
 	}
 }
