@@ -23,7 +23,7 @@ func (r *Repository) ListByDateRange(ctx context.Context, userID int, startDate,
 	var extras []*extra.Extra
 	for rows.Next() {
 		e := &extra.Extra{UserID: userID}
-		if err := rows.Scan(&e.ID, &e.Title, &e.Amount, &e.Date); err != nil {
+		if err := rows.Scan(&e.ID, &e.Description, &e.Amount, &e.Date); err != nil {
 			return nil, err
 		}
 		extras = append(extras, e)

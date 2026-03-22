@@ -12,7 +12,7 @@ func (r *Repository) Create(ctx context.Context, e *extra.Extra) error {
 		VALUES ($1, $2, $3, $4) 
 		RETURNING id, created_at`
 
-	err := r.DB.QueryRowContext(ctx, query, e.UserID, e.Title, e.Amount, e.Date).
+	err := r.DB.QueryRowContext(ctx, query, e.UserID, e.Description, e.Amount, e.Date).
 		Scan(&e.ID)
 
 	return err

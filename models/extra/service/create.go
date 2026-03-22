@@ -21,10 +21,10 @@ func (s *Service) Create(ctx context.Context, userID int, title string, amount f
 
 	// 2. Model Hazırlığı
 	newExtra := &extra.Extra{
-		UserID: userID,
-		Title:  title,
-		Amount: amount,
-		Date:   date,
+		UserID:      userID,
+		Description: title,
+		Amount:      amount,
+		Date:        date,
 	}
 
 	// 3. Kayıt

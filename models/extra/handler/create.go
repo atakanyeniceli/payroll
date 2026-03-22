@@ -24,7 +24,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	title := r.FormValue("title")
+	description := r.FormValue("description")
 	amountStr := r.FormValue("amount")
 	dateStr := r.FormValue("date")
 
@@ -42,7 +42,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. Servisi çağır
-	err = h.Service.Create(r.Context(), userID, title, amount, date)
+	err = h.Service.Create(r.Context(), userID, description, amount, date)
 	if err != nil {
 		code, msg := apperror.Resolve(err)
 		http.Error(w, msg, code)
