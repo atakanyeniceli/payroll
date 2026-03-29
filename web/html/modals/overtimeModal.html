@@ -29,9 +29,11 @@
             </button>
         </div>
 
-        <form hx-post="/dashboard/overtime" hx-target="#modal-container" hx-swap="innerHTML">
+        <form hx-post="/dashboard/overtime" hx-target="#modal-container" hx-swap="innerHTML"
+            hx-target-error="#hourlyrate-error">
             <div class="p-6 space-y-6">
-
+                <div id="hourlyrate-error"
+                    class="text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl border border-red-200 dark:border-red-800 empty:hidden"></div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai
                         Tarihi</label>

@@ -4,19 +4,45 @@
         <thead>
             <tr
                 class="border-b border-gray-100 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-gray-50/50 dark:bg-slate-800/30">
+                <th class="px-4 py-4 w-10"></th>
                 <th class="px-6 py-4 font-semibold text-center">Tarih</th>
                 <th class="px-6 py-4 font-semibold text-center">Süre</th>
                 <th class="px-6 py-4 font-semibold text-center">Oran</th>
-                <th class="px-6 py-4 font-semibold text-right">Tutar</th>
-                <th class="px-6 py-4 font-semibold">Açıklama</th>
+                <th class="px-6 py-4 font-semibold text-center">Tutar</th>
+                <th class="px-6 py-4 font-semibold text-center">Açıklama</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
             {{range .}}
             <tr class="group hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
 
+                <td class="px-4 py-4 whitespace-nowrap text-center">
+
+                    <button hx-get="/dashboard/modals/overtime/{{.ID}}" hx-target="#modal-container" hx-swap="innerHTML"
+                        class="p-1.5 text-slate-400 dark:text-slate-500 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 rounded-lg transition-all"
+                        title="Düzenle">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                            </path>
+                        </svg>
+                    </button>
+
+
+                    <button hx-delete="/dashboard/overtime/{{.ID}}"
+                        hx-confirm="Bu mesai kaydını silmek istediğinize emin misiniz?"
+                        class="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                        title="Sil">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                            </path>
+                        </svg>
+                    </button>
+                </td>
+
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center gap-2">
+                    <div class="flex justify-center gap-2">
                         <div class="p-1.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -44,13 +70,13 @@
                     </span>
                 </td>
 
-                <td class="px-6 py-4 text-right whitespace-nowrap">
+                <td class="px-6 py-4 text-center whitespace-nowrap">
                     <span class="text-sm font-bold text-slate-900 dark:text-white">
                         {{ formatMoney .Amount }} ₺
                     </span>
                 </td>
 
-                <td class="px-6 py-4">
+                <td class="px-6 py-4 text-center">
                     <p class="text-sm text-slate-500 dark:text-slate-400 truncate max-w-[200px]"
                         title="{{.Description}}">
                         {{if .Description}}{{.Description}}{{else}}-{{end}}

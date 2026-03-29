@@ -9,7 +9,7 @@ import (
 
 func (repo *Repository) GetByDate(ctx context.Context, userid int, date time.Time) (float64, error) {
 	query := `
-		SELECT amount 
+		SELECT amount
 		FROM hourly_rates 
 		WHERE user_id = $1 AND effective_date <= $2 
 		ORDER BY effective_date DESC 
