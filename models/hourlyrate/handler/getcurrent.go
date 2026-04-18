@@ -17,7 +17,7 @@ func (h *Handler) GetCurrent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2. Servisten Veriyi Çek (sadece amount verisi geliyor.)
-	amount, err := h.Service.GetByIDAndDate(r.Context(), userID, time.Now())
+	hr, err := h.Service.GetByIDAndDate(r.Context(), userID, time.Now())
 
 	// Hata yönetimi (Kayıt yoksa rate nil gelebilir, bu normaldir)
 	if err != nil {
@@ -27,8 +27,10 @@ func (h *Handler) GetCurrent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"Amount":        amount,
-		"EffectiveDate": time.Now(),
+		"Amount":        hr.Amount,
+		"EffectiveDate": hr.EffectiveDate,
+		"ID":            hr.ID,
+		"UserID":        userID,
 	}
 
 	// 3. Template Render Et

@@ -22,7 +22,7 @@ func (s *Service) GetCurrent(ctx context.Context, userID int) (*summary.SummaryS
 
 	// 1. GÜNCEL SAATLİK ÜCRETİ BUL
 	// Maaş hesabı için o anki geçerli ücreti alıyoruz
-	currentRate, err := s.RateSrv.GetByIDAndDate(ctx, userID, now)
+	hr, err := s.RateSrv.GetByIDAndDate(ctx, userID, now)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (s *Service) GetCurrent(ctx context.Context, userID int) (*summary.SummaryS
 	// 2. ÇIPLAK MAAŞ HESABI (Base Salary)
 	// Formül: Saat Ücreti * 7.5 * Gün Sayısı (Şubat=30)
 	daysInMonth := s.getSalaryDays(now.Year(), now.Month())
-	stats.BaseSalary = currentRate * 7.5 * float64(daysInMonth)
+	stats.BaseSalary = hr.Amount * 7.5 * float64(daysInMonth)
 
 	// 3. FAZLA MESAİ KAZANCI
 	overtimeLogs, err := s.OvertimeSrv.GetCurrentMonthLog(ctx, userID)

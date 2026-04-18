@@ -51,7 +51,7 @@ func PrivateWebRoutes(
 	// --- OVERTIME (Fazla Mesai) ---
 	// Sayfa Parçaları (HTMX Partial)
 	mux.HandleFunc("GET /overtime", oh.GetDashboard) // Tabloyu getirir
-	mux.HandleFunc("GET /modals/overtime/{{id}}", oh.GetModal)
+	mux.HandleFunc("GET /modals/overtime/{id}", oh.GetModal)
 	mux.HandleFunc("GET /modals/overtime", oh.GetModal) // Modalı getirir
 
 	// İşlemler (Actions)

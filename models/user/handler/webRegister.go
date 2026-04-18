@@ -9,8 +9,8 @@ import (
 func (h *Handler) WebRegister(w http.ResponseWriter, r *http.Request) {
 	firstname := r.FormValue("firstname")
 	lastname := r.FormValue("lastname")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	email := r.FormValue("registerEmail")
+	password := r.FormValue("registerPassword")
 	confirmPassword := r.FormValue("confirmPassword")
 
 	err := h.Service.Register(firstname, lastname, email, password, confirmPassword)

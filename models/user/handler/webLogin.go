@@ -6,8 +6,8 @@ import (
 )
 
 func (h *Handler) WebLogin(w http.ResponseWriter, r *http.Request) {
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	email := r.FormValue("loginEmail")
+	password := r.FormValue("loginPassword")
 
 	user, err := h.Service.Login(email, password)
 

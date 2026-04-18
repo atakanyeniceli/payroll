@@ -5,25 +5,27 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/atakanyeniceli/payroll/models/hourlyrate"
 )
 
-func (repo *Repository) GetByDate(ctx context.Context, userid int, date time.Time) (float64, error) {
+func (repo *Repository) GetByDate(ctx context.Context, userid int, date time.Time) (hourlyrate.HourlyRate, error) {
 	query := `
-		SELECT amount
+		SELECT id,amount,effective_date
 		FROM hourly_rates 
 		WHERE user_id = $1 AND effective_date <= $2 
 		ORDER BY effective_date DESC 
 		LIMIT 1
 	`
 
-	var amount float64
-	err := repo.DB.QueryRowContext(ctx, query, userid, date).Scan(&amount)
+	var h hourlyrate.HourlyRate
+	err := repo.DB.QueryRowContext(ctx, query, userid, date).Scan(&h.ID, &h.Amount, &h.EffectiveDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, nil
+			return h, nil
 		}
-		return 0, fmt.Errorf("saatlik ücret getirilirken veritabanı hatası: %w", err)
+		return h, fmt.Errorf("saatlik ücret getirilirken veritabanı hatası: %w", err)
 	}
 
-	return amount, nil
+	return h, nil
 }

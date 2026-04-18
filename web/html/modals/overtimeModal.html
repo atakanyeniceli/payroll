@@ -30,12 +30,14 @@
         </div>
 
         <form hx-post="/dashboard/overtime" hx-target="#modal-container" hx-swap="innerHTML"
-            hx-target-error="#hourlyrate-error">
+            hx-target-error="#overtime-error">
             <div class="p-6 space-y-6">
-                <div id="hourlyrate-error"
-                    class="text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl border border-red-200 dark:border-red-800 empty:hidden"></div>
+                <div id="overtime-error"
+                    class="text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl border border-red-200 dark:border-red-800 empty:hidden [&:not(:has(p,span,strong,em)):not(:has(text))]:hidden">
+                </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai
+                    <label for="modalWorkDate"
+                        class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai
                         Tarihi</label>
                     <div class="relative group">
                         <div
@@ -47,7 +49,8 @@
                             </svg>
                         </div>
 
-                        <input type="date" name="workDate" required onclick="this.showPicker()"
+                        <input id="modalWorkDate" type="date" name="workDate" required onclick="this.showPicker()"
+                            value="{{ if . }}{{ .WorkDate.Format `2006-01-02` }}{{ end }}"
                             class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-shadow shadow-sm font-medium cursor-pointer">
                     </div>
                 </div>
@@ -62,31 +65,40 @@
                     </div>
 
                     <div>
-                        <label
+                        <label for="modalStartTime"
                             class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Başlangıç</label>
-                        <input type="time" name="startTime" required onclick="this.showPicker()"
+                        <input id="modalStartTime" type="time" name="startTime" required onclick="this.showPicker()"
+                            value="{{if .}}{{ .StartTime}}{{end}}"
                             class="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-center font-semibold shadow-sm cursor-pointer">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Bitiş</label>
-                        <input type="time" name="endTime" required onclick="this.showPicker()"
+                        <label for="modalEndTime"
+                            class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Bitiş</label>
+                        <input id="modalEndTime" type="time" name="endTime" required onclick="this.showPicker()"
+                            value="{{if .}}{{ .EndTime }}{{end}}"
                             class="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-center font-semibold shadow-sm cursor-pointer">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai Türü /
+                    <label for="modalMultiplier"
+                        class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Mesai Türü /
                         Oranı</label>
                     <div class="relative">
-                        <select name="multiplier"
+                        <select id="modalMultiplier" name="multiplier"
                             class="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent appearance-none shadow-sm font-medium cursor-pointer">
-                            <option value="1.50">%50 Zamlı</option>
-                            <option value="1.75">%75 Zamlı</option>
-                            <option value="2.00">%100 Zamlı</option>
-                            <option value="2.50">%150 Zamlı</option>
-                            <option value="3.00">%200 Zamlı</option>
-                            <option value="4.00">%300 Zamlı</option>
+                            <option value="1.50" {{ if and . (eq .Multiplier 1.5) }}selected{{ end }}>%50 Zamlı</option>
+                            <option value="1.75" {{ if and . (eq .Multiplier 1.75) }}selected{{ end }}>%75 Zamlı
+                            </option>
+                            <option value="2.00" {{ if and . (eq .Multiplier 2.0) }}selected{{ end }}>%100 Zamlı
+                            </option>
+                            <option value="2.50" {{ if and . (eq .Multiplier 2.5) }}selected{{ end }}>%150 Zamlı
+                            </option>
+                            <option value="3.00" {{ if and . (eq .Multiplier 3.0) }}selected{{ end }}>%200 Zamlı
+                            </option>
+                            <option value="4.00" {{ if and . (eq .Multiplier 4.0) }}selected{{ end }}>%300 Zamlı
+                            </option>
                         </select>
                         <div
                             class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
@@ -99,10 +111,16 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Not /
+                    <label for="modalDescription"
+                        class="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">Not /
                         Açıklama</label>
-                    <textarea name="description" rows="2" placeholder="Örn: Yıl sonu envanter sayımı..."
-                        class="w-full py-3 px-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm resize-none"></textarea>
+                    <textarea id="modalDescription" name="description" rows="2"
+                        placeholder="Örn: Yıl sonu envanter sayımı..."
+                        class="w-full py-3 px-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent shadow-sm resize-none">
+                        {{- if . -}}
+                        {{- .Description -}}
+                        {{- end -}}
+                    </textarea>
                 </div>
             </div>
 

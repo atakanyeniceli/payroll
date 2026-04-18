@@ -27,10 +27,10 @@ func (s *Service) GetCurrentMonthLog(ctx context.Context, userID int) ([]*overti
 	for _, ot := range overtimes {
 		// O tarihteki saatlik ücreti soruyoruz
 		// (HourlyRate servisine yazdığımız GetRateForDate fonksiyonu)
-		rate, err := s.RateSrv.GetByIDAndDate(ctx, userID, ot.WorkDate)
-		if err == nil && rate > 0 {
+		hr, err := s.RateSrv.GetByIDAndDate(ctx, userID, ot.WorkDate)
+		if err == nil && hr.Amount > 0 {
 			// Tutar = Süre * Çarpan * Saatlik Ücret
-			ot.Amount = ot.DurationHours * ot.Multiplier * rate
+			ot.Amount = ot.DurationHours * ot.Multiplier * hr.Amount
 		}
 	}
 

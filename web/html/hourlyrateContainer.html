@@ -24,14 +24,14 @@
         {{ end }}
     </div>
 
-    <div
+    <button hx-get="/dashboard/modals/hourlyrate"
         class="p-2 bg-gray-50 dark:bg-slate-800 group-hover:bg-sky-50 dark:group-hover:bg-sky-900/30 text-gray-400 group-hover:text-sky-600 rounded-lg transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
             </path>
         </svg>
-    </div>
+    </button>
 </div>
 {{ else }}
 <div class="flex items-center justify-between gap-4 opacity-75">
